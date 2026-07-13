@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# Load/unload the aesdchar character driver and manage its device node.
+# The driver is installed under /lib/modules by the aesd-assignments
+# package (depmod already run), so modprobe resolves it by name.
+#
+
+module="aesdchar"
+device="aesdchar"
+mode="0666"
+
+start() {
+	echo "Loading $module driver"
+	modprobe "$module" || { echo "modprobe $module failed"; exit 1; }
+
+	# The driver requests a dynamic major number; look it up in /proc/devices
+	# and (re)create the device node. Harmless if devtmpfs already created it.
+	major=$(awk -v mod="$device" '$2 == mod {print $1}' /proc/devices)
+	if [ -n "$major" ]; then
+		rm -f "/dev/$device"
+		mknod "/dev/$device" c "$major" 0
+		chmod "$mode" "/dev/$device"
+	fi
+}
+
+stop() {
+	echo "Unloading $module driver"
+	rm -f "/dev/$device"
+	rmmod "$module" 2>/dev/null
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart|reload)
+		stop
+		start
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+		;;
+esac
+
+exit 0

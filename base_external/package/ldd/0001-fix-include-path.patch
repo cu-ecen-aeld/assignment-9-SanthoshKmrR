@@ -1,0 +1,28 @@
+--- a/misc-modules/Makefile
++++ b/misc-modules/Makefile
+@@ -5,8 +5,8 @@
+ # This conditional selects whether we are being included from the
+ # kernel Makefile or not.
+ 
+-LDDINC=$(PWD)/../include
+-EXTRA_CFLAGS += -I$(LDDINC)
++LDDINC=$(src)/../include
++ccflags-y += -I$(LDDINC)
+ 
+ ifeq ($(KERNELRELEASE),)
+ 
+--- a/scull/Makefile
++++ b/scull/Makefile
+@@ -9,10 +9,10 @@
+   DEBFLAGS = -O2
+ endif
+ 
+-LDDINC=$(PWD)/../include
++LDDINC=$(src)/../include
+ 
+ EXTRA_CFLAGS += $(DEBFLAGS)
+-EXTRA_CFLAGS += -I$(LDDINC)
++ccflags-y += -I$(LDDINC)
+ 
+ ifneq ($(KERNELRELEASE),)
+ # call from kernel build system

@@ -1,0 +1,11 @@
+
+config BR2_PACKAGE_AESD_ASSIGNMENTS
+	bool "aesd-assignments"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Builds and installs the AESD socket server (aesdsocket) and the
+	  aesdchar character driver kernel module. Startup scripts in the
+	  rootfs overlay load the driver and start the application at boot.
+
+comment "aesd-assignments needs a Linux kernel to build the aesdchar module"
+	depends on !BR2_LINUX_KERNEL

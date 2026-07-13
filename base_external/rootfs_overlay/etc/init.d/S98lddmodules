@@ -1,0 +1,23 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        # Load scull driver
+        modprobe scull  # or use insmod path
+
+        # Load faulty driver
+        modprobe faulty
+
+        # Load hello module
+        modprobe hello
+        ;;
+    stop)
+        # Unload all
+        rmmod hello
+        rmmod faulty
+        rmmod scull   # or use scull_unload script logic
+        ;;
+    *)
+        echo "Usage: $0 {start|stop}"
+        exit 1
+esac

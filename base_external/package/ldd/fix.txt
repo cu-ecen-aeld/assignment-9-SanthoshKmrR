@@ -1,0 +1,46 @@
+# -----------------------------------------------------------------------
+# Copy shared headers directly into each module subdirectory.
+# jiq.c uses #include "proc_ops_version.h" (quoted = looks in same dir first)
+# Copying the header there guarantees GCC finds it regardless of any
+# include path settings or kernel version.
+# -----------------------------------------------------------------------
+# define LDD_FIX_KERNEL_INCLUDES
+#     cp $(@D)/include/proc_ops_version.h $(@D)/misc-modules/proc_ops_version.h
+#     cp $(@D)/include/proc_ops_version.h $(@D)/scull/proc_ops_version.h
+# endef
+
+# -----------------------------------------------------------------------
+# Fix 2: Kernel 6.15+ removed from_timer() -> timer_container_of()
+#         Kernel 6.15+ removed del_timer_sync() -> timer_delete_sync()
+# -----------------------------------------------------------------------
+# -----------------------------------------------------------------------
+# Fix 2: Kernel 6.15+ timer API — fix ALL .c files at once
+#   from_timer()     → timer_container_of()
+#   del_timer_sync() → timer_delete_sync()
+# -----------------------------------------------------------------------
+# define LDD_FIX_TIMER_API
+#     find $(@D) -name "*.c" | xargs grep -l "from_timer" | \
+#         xargs $(SED) 's/from_timer(/timer_container_of(/g'
+#     find $(@D) -name "*.c" | xargs grep -l "del_timer_sync" | \
+#         xargs $(SED) 's/del_timer_sync(/timer_delete_sync(/g'
+# endef
+
+# LDD_POST_EXTRACT_HOOKS += LDD_FIX_HEADERS
+# LDD_POST_EXTRACT_HOOKS += LDD_FIX_TIMER_API
+
+# LDD_POST_EXTRACT_HOOKS += LDD_FIX_KERNEL_INCLUDES
+
+# define LDD_BUILD_CMDS
+# # To Do Build options if any
+# 	$(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/misc-modules clean
+# 	$(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/misc-modules all
+# endef
+
+# # TODO add the misc-modules folder to the target after downloading and building it
+# define LDD_INSTALL_TARGET_CMDS
+# #Todo install to target
+# 	$(INSTALL) -d 0755 $(@D)/conf/ $(TARGET_DIR)/etc/finder-app/conf/
+# 	$(INSTALL) -m 0755 $(@D)/conf/* $(TARGET_DIR)/etc/finder-app/conf/
+# 	$(INSTALL) -m 0755 $(@D)/assignment-autotest/test/assignment4/* $(TARGET_DIR)/bin
+# endef
+

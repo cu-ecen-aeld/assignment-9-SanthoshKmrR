@@ -1,0 +1,5 @@
+
+config BR2_PACKAGE_LDD
+	bool "ldd"
+	help
+	  Includes ldd repot which scull,misc-modules and faulty for the assignment-7-complete.
